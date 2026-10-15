@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light only">
+<meta name="theme-color" content="#ffffff">
+<title>My Queue Card</title>
+<meta name="description" content="Robie is a writer and founder in Abuja, building Queue. A full introduction, just a scan away.">
+<meta property="og:title" content="Robie on Queue">
+<meta property="og:description" content="A full introduction, just a scan away.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23A67B5B'/%3E%3Ctext x='32' y='46' font-size='40' font-family='Arial' font-weight='700' text-anchor='middle' fill='white'%3Eq%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFFFF; --text: #3B2A1E; --label: #7A5638;
+    --accent: #A67B5B; --strong: #8A6444;
+    --card: #F6EFE7; --line: #E8DAC9;
+    --font: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--font); font-size: 16px; line-height: 1.6; padding-bottom: 104px; }
+  a { color: inherit; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+  .wrap { max-width: 520px; margin: 0 auto; padding: 18px 20px 0; }
+  .mark { margin: 0 0 14px; font-weight: 700; font-size: 22px; letter-spacing: -0.02em; color: var(--accent); line-height: 1.2; }
+
+  .nav { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
+         display: flex; gap: 4px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px;
+         box-shadow: 0 10px 30px -12px rgba(59, 42, 30, 0.35); z-index: 5; }
+  .nav a { display: block; padding: 10px 24px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 15px; color: var(--label); }
+  .nav a[aria-current="page"] { background: var(--strong); color: #fff; }
+
+  .title { margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+
+  .stage { perspective: 1400px; display: flex; justify-content: center; margin: 28px 0 10px; }
+  .card { --w: min(calc(100vw - 40px), 460px); position: relative; width: var(--w); height: calc(var(--w) * 2 / 3.5);
+          transform-style: preserve-3d; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+  .card:active { cursor: grabbing; }
+  .card.snap { transition: transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .face { position: absolute; inset: 0; border-radius: calc(var(--w) * 0.03); overflow: hidden; background: #fff;
+          backface-visibility: hidden; -webkit-backface-visibility: hidden; border: 1px solid var(--line);
+          box-shadow: 0 22px 40px -22px rgba(59, 42, 30, 0.45); }
+
+  .front .q { position: absolute; left: 4%; top: 6.25%; margin: 0; font-weight: 700; font-size: calc(var(--w) * 0.036); line-height: 1; color: var(--accent); }
+  .front .n { position: absolute; left: 4%; bottom: 6.25%; margin: 0; font-weight: 500; font-size: calc(var(--w) * 0.054); line-height: 1; color: var(--accent); }
+  .front .strip { position: absolute; top: 0; right: 0; bottom: 0; width: 30%; background: var(--accent); display: flex; align-items: center; padding: 0 4%; }
+  .front .strip p { margin: 0; color: #fff; font-weight: 700; font-size: calc(var(--w) * 0.033); line-height: 1.3; }
+
+  .back { transform: rotateY(180deg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--w) * 0.012); }
+  .back svg { height: 78%; width: auto; display: block; }
+  .back p { margin: 0; font-style: italic; font-size: calc(var(--w) * 0.036); color: var(--label); }
+
+  .hint { text-align: center; margin: 14px 0 0; font-size: 14px; color: var(--label); }
+  .actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 26px; }
+  .btn { appearance: none; border: 2px solid var(--strong); border-radius: 999px; padding: 13px 24px; font: 600 16px/1 var(--font); background: var(--strong); color: #fff; cursor: pointer; }
+  .btn.ghost { background: #fff; color: var(--strong); }
+  .toast { text-align: center; min-height: 24px; margin: 14px 0 0; font-size: 14px; color: var(--label); }
+
+  .overlay { position: fixed; inset: 0; background: #fff; z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 24px; cursor: pointer; }
+  .overlay[hidden] { display: none; }
+  .overlay svg { width: min(88vw, 62vh); height: auto; display: block; }
+  .overlay p { margin: 0; font-style: italic; color: var(--label); font-size: 17px; text-align: center; }
+  .overlay small { color: var(--label); font-size: 13px; }
+
+  @media (prefers-reduced-motion: reduce) { .card.snap { transition: none; } }
+
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="mark">queue.</p>
+  <h1 class="title">My Queue Card</h1>
+
+  <div class="stage">
+    <div class="card" id="card" role="button" tabindex="0" aria-label="Robinson Akpama's Queue card. Press to turn it over." aria-pressed="false">
+      <div class="face front">
+        <p class="q">queue.</p>
+        <p class="n">Robinson Akpama</p>
+        <div class="strip"><p>Queue is an identity first platform, designed to never let a moment pass.</p></div>
+      </div>
+      <div class="face back" aria-hidden="true">
+        <svg viewBox="0 0 37 37" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR code that opens Robie's Queue profile"><rect width="37" height="37" fill="#fff"/><path fill="#3B2A1E" d="M4 4h7v1h-7zM12 4h2v1h-2zM15 4h1v1h-1zM17 4h3v1h-3zM23 4h2v1h-2zM26 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM12 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM20 5h3v1h-3zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM13 6h1v1h-1zM16 6h1v1h-1zM20 6h1v1h-1zM22 6h2v1h-2zM26 6h1v1h-1zM28 6h3v1h-3zM32 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h3v1h-3zM18 7h2v1h-2zM21 7h1v1h-1zM23 7h1v1h-1zM26 7h1v1h-1zM28 7h3v1h-3zM32 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM14 8h3v1h-3zM18 8h1v1h-1zM20 8h2v1h-2zM23 8h1v1h-1zM26 8h1v1h-1zM28 8h3v1h-3zM32 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM13 9h2v1h-2zM16 9h2v1h-2zM19 9h3v1h-3zM23 9h1v1h-1zM26 9h1v1h-1zM32 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h7v1h-7zM12 11h3v1h-3zM19 11h3v1h-3zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h3v1h-3zM13 12h2v1h-2zM16 12h2v1h-2zM19 12h1v1h-1zM21 12h1v1h-1zM23 12h2v1h-2zM26 12h1v1h-1zM29 12h1v1h-1zM31 12h2v1h-2zM5 13h3v1h-3zM11 13h3v1h-3zM15 13h1v1h-1zM17 13h3v1h-3zM21 13h4v1h-4zM26 13h3v1h-3zM32 13h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM10 14h1v1h-1zM12 14h1v1h-1zM14 14h4v1h-4zM20 14h1v1h-1zM22 14h1v1h-1zM26 14h1v1h-1zM30 14h2v1h-2zM5 15h5v1h-5zM12 15h2v1h-2zM20 15h1v1h-1zM23 15h1v1h-1zM25 15h2v1h-2zM28 15h1v1h-1zM32 15h1v1h-1zM4 16h2v1h-2zM7 16h5v1h-5zM18 16h2v1h-2zM21 16h1v1h-1zM23 16h1v1h-1zM27 16h1v1h-1zM29 16h2v1h-2zM4 17h3v1h-3zM14 17h3v1h-3zM18 17h1v1h-1zM20 17h1v1h-1zM23 17h1v1h-1zM25 17h2v1h-2zM30 17h3v1h-3zM6 18h3v1h-3zM10 18h2v1h-2zM13 18h3v1h-3zM17 18h1v1h-1zM19 18h2v1h-2zM23 18h2v1h-2zM26 18h2v1h-2zM30 18h3v1h-3zM11 19h3v1h-3zM18 19h1v1h-1zM20 19h1v1h-1zM23 19h4v1h-4zM31 19h1v1h-1zM4 20h1v1h-1zM6 20h2v1h-2zM9 20h3v1h-3zM13 20h1v1h-1zM15 20h1v1h-1zM18 20h3v1h-3zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h1v1h-1zM7 21h3v1h-3zM13 21h3v1h-3zM18 21h1v1h-1zM20 21h2v1h-2zM24 21h1v1h-1zM27 21h1v1h-1zM29 21h3v1h-3zM4 22h1v1h-1zM7 22h1v1h-1zM9 22h4v1h-4zM14 22h1v1h-1zM17 22h5v1h-5zM26 22h3v1h-3zM30 22h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM12 23h2v1h-2zM16 23h3v1h-3zM21 23h3v1h-3zM25 23h2v1h-2zM30 23h1v1h-1zM5 24h4v1h-4zM10 24h1v1h-1zM12 24h1v1h-1zM15 24h1v1h-1zM17 24h2v1h-2zM20 24h2v1h-2zM24 24h7v1h-7zM12 25h3v1h-3zM16 25h1v1h-1zM19 25h4v1h-4zM24 25h1v1h-1zM28 25h5v1h-5zM4 26h7v1h-7zM12 26h3v1h-3zM16 26h1v1h-1zM18 26h2v1h-2zM22 26h3v1h-3zM26 26h1v1h-1zM28 26h2v1h-2zM31 26h1v1h-1zM4 27h1v1h-1zM10 27h1v1h-1zM12 27h3v1h-3zM17 27h3v1h-3zM22 27h3v1h-3zM28 27h2v1h-2zM32 27h1v1h-1zM4 28h1v1h-1zM6 28h3v1h-3zM10 28h1v1h-1zM15 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM24 28h5v1h-5zM30 28h1v1h-1zM32 28h1v1h-1zM4 29h1v1h-1zM6 29h3v1h-3zM10 29h1v1h-1zM12 29h2v1h-2zM15 29h1v1h-1zM23 29h3v1h-3zM27 29h3v1h-3zM31 29h1v1h-1zM4 30h1v1h-1zM6 30h3v1h-3zM10 30h1v1h-1zM12 30h3v1h-3zM16 30h1v1h-1zM21 30h4v1h-4zM27 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM4 31h1v1h-1zM10 31h1v1h-1zM14 31h1v1h-1zM17 31h3v1h-3zM21 31h2v1h-2zM24 31h2v1h-2zM28 31h2v1h-2zM31 31h1v1h-1zM4 32h7v1h-7zM12 32h1v1h-1zM16 32h1v1h-1zM18 32h1v1h-1zM21 32h4v1h-4zM26 32h3v1h-3zM31 32h1v1h-1z"/></svg>
+        <p>A full introduction, just a scan away...</p>
+      </div>
+    </div>
+  </div>
+  <p class="hint">Tap or drag the card to turn it over.</p>
+
+  <div class="actions">
+    <button class="btn" id="big-btn" type="button">Show large QR</button>
+    <button class="btn ghost" id="share" type="button">Share link</button>
+  </div>
+  <p class="toast" id="toast" role="status" aria-live="polite"></p>
+</main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Large QR code" hidden>
+  <svg viewBox="0 0 37 37" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="QR code that opens Robie's Queue profile"><rect width="37" height="37" fill="#fff"/><path fill="#3B2A1E" d="M4 4h7v1h-7zM12 4h2v1h-2zM15 4h1v1h-1zM17 4h3v1h-3zM23 4h2v1h-2zM26 4h7v1h-7zM4 5h1v1h-1zM10 5h1v1h-1zM12 5h1v1h-1zM15 5h1v1h-1zM17 5h1v1h-1zM20 5h3v1h-3zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM4 6h1v1h-1zM6 6h3v1h-3zM10 6h1v1h-1zM13 6h1v1h-1zM16 6h1v1h-1zM20 6h1v1h-1zM22 6h2v1h-2zM26 6h1v1h-1zM28 6h3v1h-3zM32 6h1v1h-1zM4 7h1v1h-1zM6 7h3v1h-3zM10 7h1v1h-1zM12 7h3v1h-3zM18 7h2v1h-2zM21 7h1v1h-1zM23 7h1v1h-1zM26 7h1v1h-1zM28 7h3v1h-3zM32 7h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM10 8h1v1h-1zM14 8h3v1h-3zM18 8h1v1h-1zM20 8h2v1h-2zM23 8h1v1h-1zM26 8h1v1h-1zM28 8h3v1h-3zM32 8h1v1h-1zM4 9h1v1h-1zM10 9h1v1h-1zM13 9h2v1h-2zM16 9h2v1h-2zM19 9h3v1h-3zM23 9h1v1h-1zM26 9h1v1h-1zM32 9h1v1h-1zM4 10h7v1h-7zM12 10h1v1h-1zM14 10h1v1h-1zM16 10h1v1h-1zM18 10h1v1h-1zM20 10h1v1h-1zM22 10h1v1h-1zM24 10h1v1h-1zM26 10h7v1h-7zM12 11h3v1h-3zM19 11h3v1h-3zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h3v1h-3zM13 12h2v1h-2zM16 12h2v1h-2zM19 12h1v1h-1zM21 12h1v1h-1zM23 12h2v1h-2zM26 12h1v1h-1zM29 12h1v1h-1zM31 12h2v1h-2zM5 13h3v1h-3zM11 13h3v1h-3zM15 13h1v1h-1zM17 13h3v1h-3zM21 13h4v1h-4zM26 13h3v1h-3zM32 13h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM10 14h1v1h-1zM12 14h1v1h-1zM14 14h4v1h-4zM20 14h1v1h-1zM22 14h1v1h-1zM26 14h1v1h-1zM30 14h2v1h-2zM5 15h5v1h-5zM12 15h2v1h-2zM20 15h1v1h-1zM23 15h1v1h-1zM25 15h2v1h-2zM28 15h1v1h-1zM32 15h1v1h-1zM4 16h2v1h-2zM7 16h5v1h-5zM18 16h2v1h-2zM21 16h1v1h-1zM23 16h1v1h-1zM27 16h1v1h-1zM29 16h2v1h-2zM4 17h3v1h-3zM14 17h3v1h-3zM18 17h1v1h-1zM20 17h1v1h-1zM23 17h1v1h-1zM25 17h2v1h-2zM30 17h3v1h-3zM6 18h3v1h-3zM10 18h2v1h-2zM13 18h3v1h-3zM17 18h1v1h-1zM19 18h2v1h-2zM23 18h2v1h-2zM26 18h2v1h-2zM30 18h3v1h-3zM11 19h3v1h-3zM18 19h1v1h-1zM20 19h1v1h-1zM23 19h4v1h-4zM31 19h1v1h-1zM4 20h1v1h-1zM6 20h2v1h-2zM9 20h3v1h-3zM13 20h1v1h-1zM15 20h1v1h-1zM18 20h3v1h-3zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h1v1h-1zM7 21h3v1h-3zM13 21h3v1h-3zM18 21h1v1h-1zM20 21h2v1h-2zM24 21h1v1h-1zM27 21h1v1h-1zM29 21h3v1h-3zM4 22h1v1h-1zM7 22h1v1h-1zM9 22h4v1h-4zM14 22h1v1h-1zM17 22h5v1h-5zM26 22h3v1h-3zM30 22h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM12 23h2v1h-2zM16 23h3v1h-3zM21 23h3v1h-3zM25 23h2v1h-2zM30 23h1v1h-1zM5 24h4v1h-4zM10 24h1v1h-1zM12 24h1v1h-1zM15 24h1v1h-1zM17 24h2v1h-2zM20 24h2v1h-2zM24 24h7v1h-7zM12 25h3v1h-3zM16 25h1v1h-1zM19 25h4v1h-4zM24 25h1v1h-1zM28 25h5v1h-5zM4 26h7v1h-7zM12 26h3v1h-3zM16 26h1v1h-1zM18 26h2v1h-2zM22 26h3v1h-3zM26 26h1v1h-1zM28 26h2v1h-2zM31 26h1v1h-1zM4 27h1v1h-1zM10 27h1v1h-1zM12 27h3v1h-3zM17 27h3v1h-3zM22 27h3v1h-3zM28 27h2v1h-2zM32 27h1v1h-1zM4 28h1v1h-1zM6 28h3v1h-3zM10 28h1v1h-1zM15 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM24 28h5v1h-5zM30 28h1v1h-1zM32 28h1v1h-1zM4 29h1v1h-1zM6 29h3v1h-3zM10 29h1v1h-1zM12 29h2v1h-2zM15 29h1v1h-1zM23 29h3v1h-3zM27 29h3v1h-3zM31 29h1v1h-1zM4 30h1v1h-1zM6 30h3v1h-3zM10 30h1v1h-1zM12 30h3v1h-3zM16 30h1v1h-1zM21 30h4v1h-4zM27 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM4 31h1v1h-1zM10 31h1v1h-1zM14 31h1v1h-1zM17 31h3v1h-3zM21 31h2v1h-2zM24 31h2v1h-2zM28 31h2v1h-2zM31 31h1v1h-1zM4 32h7v1h-7zM12 32h1v1h-1zM16 32h1v1h-1zM18 32h1v1h-1zM21 32h4v1h-4zM26 32h3v1h-3zM31 32h1v1h-1z"/></svg>
+  <p>A full introduction, just a scan away...</p>
+  <small>Tap anywhere to close</small>
+</div>
+<nav class="nav" aria-label="Pages">
+  <a href="index.html">Profile</a>
+  <a href="card.html" aria-current="page">Card</a>
+</nav>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Flip card: tap or drag */
+  var card = document.getElementById('card');
+  var faces = card.querySelectorAll('.face');
+  var angle = 0, flipped = false, startX = 0, startAngle = 0, down = false, moved = false;
+
+  function setAngle(a, animate) {
+    if (animate && !reduce) { card.classList.add('snap'); } else { card.classList.remove('snap'); }
+    card.style.transform = 'rotateY(' + a + 'deg)';
+    angle = a;
+  }
+  function sync() {
+    card.setAttribute('aria-pressed', String(flipped));
+    faces[0].setAttribute('aria-hidden', String(flipped));
+    faces[1].setAttribute('aria-hidden', String(!flipped));
+  }
+  function toggle() { flipped = !flipped; setAngle(angle + 180, true); sync(); }
+  function settle() {
+    var a = ((angle % 360) + 360) % 360;
+    var base = angle - a;
+    var target = a < 90 ? base : (a < 270 ? base + 180 : base + 360);
+    flipped = (((Math.round(target / 180)) % 2) + 2) % 2 === 1;
+    setAngle(target, true);
+    sync();
+  }
+  card.addEventListener('pointerdown', function (e) {
+    down = true; moved = false; startX = e.clientX; startAngle = angle;
+    card.classList.remove('snap');
+    try { card.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  card.addEventListener('pointermove', function (e) {
+    if (!down) { return; }
+    var dx = e.clientX - startX;
+    if (!moved && Math.abs(dx) > 6) { moved = true; }
+    if (moved) { setAngle(startAngle + dx * 0.7, false); }
+  });
+  card.addEventListener('pointerup', function () {
+    if (!down) { return; }
+    down = false;
+    if (moved) { settle(); } else { toggle(); }
+  });
+  card.addEventListener('pointercancel', function () {
+    if (!down) { return; }
+    down = false;
+    settle();
+  });
+  card.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggle(); }
+  });
+  if (!reduce) {
+    setAngle(-80, false);
+    requestAnimationFrame(function () { requestAnimationFrame(function () { setAngle(0, true); }); });
+  }
+  sync();
+
+  /* Large QR */
+  var overlay = document.getElementById('overlay');
+  function openBig() { overlay.hidden = false; document.body.style.overflow = 'hidden'; }
+  function closeBig() { overlay.hidden = true; document.body.style.overflow = ''; }
+  document.getElementById('big-btn').addEventListener('click', openBig);
+  overlay.addEventListener('click', closeBig);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeBig(); } });
+
+  /* Share link */
+  var toast = document.getElementById('toast');
+  function say(msg) { toast.textContent = msg; setTimeout(function () { toast.textContent = ''; }, 2500); }
+  document.getElementById('share').addEventListener('click', function () {
+    var url = new URL('./', location.href).href;
+    if (navigator.share) {
+      navigator.share({ title: 'Robie on Queue', text: 'A full introduction, just a scan away.', url: url }).catch(function () {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(function () { say('Link copied'); }, function () { say('Copy is not available here'); });
+    } else {
+      say('Copy is not available here');
+    }
+  });
+})();
+</script>
+</body>
+</html>
