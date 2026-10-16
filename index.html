@@ -32,7 +32,10 @@
   .nav { position: fixed; left: 50%; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%);
          display: flex; gap: 4px; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px;
          box-shadow: 0 10px 30px -12px rgba(59, 42, 30, 0.35); z-index: 5; }
-  .nav a { display: block; padding: 10px 24px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 15px; color: var(--label); }
+  .nav a { display: flex; align-items: center; gap: 8px; padding: 10px 22px; border-radius: 999px; text-decoration: none; font-weight: 600; font-size: 15px; color: var(--label); }
+  .ni { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+  .nav a.scan { padding: 10px 20px; }
+  .nav a.scan .ni { width: 22px; height: 22px; stroke-width: 2.2; }
   .nav a[aria-current="page"] { background: var(--strong); color: #fff; }
 
   .gallery { position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 2 / 3; background: var(--accent);
@@ -109,7 +112,7 @@
 </main>
 <nav class="nav" aria-label="Pages">
   <a href="index.html" aria-current="page">Profile</a>
-  <a href="card.html">Card</a>
+  <a href="card.html" class="scan" aria-label="Scan" title="Scan"><svg class="ni" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.2 8.2V6.7A3.5 3.5 0 0 1 6.7 3.2H8.2M15.8 3.2H17.3A3.5 3.5 0 0 1 20.8 6.7V8.2M20.8 15.8V17.3A3.5 3.5 0 0 1 17.3 20.8H15.8M8.2 20.8H6.7A3.5 3.5 0 0 1 3.2 17.3V15.8"/></svg></a>
 </nav>
 
 <script>
